@@ -25,7 +25,7 @@ interface DiscordUser {
   }>;
 }
 
-router.get("/art/card/:id", async (req, res) => {
+router.get("/card/:id", async (req, res) => {
   try {
     const { id, } = req.params;
 
