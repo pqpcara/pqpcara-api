@@ -4,6 +4,13 @@ Hello! This is my API.
 
 To clarify for anyone trying to officially understand what it is: this is a multifunctional API. It was developed to support both public and private projects, such as tracking systems, artificial intelligence integrations, and other various applications.
 
+## Routes
+
+### Discord Card Profile
+```curl
+http://api.localhost:8080/v1/discord/card/id
+```
+
 ## Bun
 
 In this project, I am using Bun. I chose Bun because I like the name and also because of how simple, clean, and fast it is.
