@@ -1,4 +1,6 @@
 # dependencies (bun install)
+.gitignore
+*.txt
 node_modules
 
 # output
