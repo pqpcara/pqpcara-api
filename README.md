@@ -7,9 +7,15 @@ To clarify for anyone trying to officially understand what it is: this is a mult
 ## Routes
 
 ### Discord Card Profile
-```curl
-http://api.localhost:8080/v1/discord/card/id
 ```
+GET http://api.localhost:8080/v1/discord/card/:id
+GET http://api.localhost:8080/v1/discord/card/:id?showDecorations=true&showBadges=true&showDate=true
+```
+
+#### Query Parameters
+- `showDecorations` (optional): `true` or `false` - Mostra a decoração do avatar (padrão: `true`)
+- `showBadges` (optional): `true` or `false` - Mostra os badges do usuário (padrão: `true`)
+- `showDate` (optional): `true` or `false` - Mostra a data de criação da conta (padrão: `true`)
 
 ## Bun
 

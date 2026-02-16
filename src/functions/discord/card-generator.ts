@@ -5,9 +5,17 @@ interface CardData {
   username: string;
   global_name: string;
   avatar: string;
+  avatar_decoration_data?: {
+    asset: string;
+    sku_id: string;
+    expires_at: string | null;
+  };
   banner?: string;
   badges?: Array<{ id: string; icon: string }>;
   createdTimestamp?: number;
+  showDecorations?: boolean;
+  showBadges?: boolean;
+  showDate?: boolean;
 }
 
 export async function generateCard(data: CardData): Promise<Buffer> {
@@ -49,13 +57,21 @@ export async function generateCard(data: CardData): Promise<Buffer> {
     ctx.clip();
     ctx.drawImage(avatarImg, 63, 36, 230, 230);
     ctx.restore();
+
+    if (data.showDecorations && data.avatar_decoration_data) {
+      const avatarDecorationUrl = `https://cdn.discordapp.com/avatar-decoration-presets/${data.avatar_decoration_data.asset}.png?size=512`;
+      try {
+        const decorationImg = await loadImage(avatarDecorationUrl);
+        ctx.drawImage(decorationImg, 63, 36, 230, 230);
+      } catch (e) {}
+    }
   } catch (e) { }
 
   let name = data.global_name || data.username;
-  let fontSize = 82;
+  let fontSize = 75;
   const maxWidth = 540;
 
-  ctx.font = `800 ${fontSize}px "Segoe UI", Arial, sans-serif`;
+  ctx.font = `800 ${fontSize}px "Inter", "Segoe UI", Arial, sans-serif`;
   if (ctx.measureText(name).width > maxWidth) {
     fontSize = 70;
     ctx.font = `800 ${fontSize}px "Segoe UI", Arial, sans-serif`;
@@ -71,23 +87,25 @@ export async function generateCard(data: CardData): Promise<Buffer> {
   ctx.fillText(name, 315, 152);
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-  ctx.font = '400 68px "Segoe UI", Arial, sans-serif';
+  ctx.font = '400 60px "Segoe UI", Arial, sans-serif';
   ctx.fillText(`@${data.username}`, 315, 218);
 
-  const dateStr = data.createdTimestamp
-    ? new Date(data.createdTimestamp).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-    : "Unknown";
+  if (data.showDate !== false) {
+    const dateStr = data.createdTimestamp
+      ? new Date(data.createdTimestamp).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+      : "Unknown";
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-  roundRect(ctx, 705, 248, 155, 36, 10);
-  ctx.fill();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+    roundRect(ctx, 705, 248, 155, 36, 10);
+    ctx.fill();
 
-  ctx.fillStyle = "#FFFFFF";
-  ctx.textAlign = "center";
-  ctx.font = '600 20px "Segoe UI", sans-serif';
-  ctx.fillText(dateStr, 782, 273);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = '600 20px "Segoe UI", sans-serif';
+    ctx.fillText(dateStr, 782, 273);
+  }
 
-  if (data.badges && data.badges.length > 0) {
+  if (data.showBadges !== false && data.badges && data.badges.length > 0) {
     const badgePriority: { [key: string]: number } = {
       "nitro": 1,
       "premium_tenure_1_month_v2": 2,

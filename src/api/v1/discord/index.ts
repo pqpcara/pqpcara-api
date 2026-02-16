@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generateCard } from "./card-generator";
+import { generateCard } from "../../../functions/discord/card-generator";
 
 const router = Router();
 
@@ -14,6 +14,11 @@ interface DiscordUser {
     username: string;
     global_name: string;
     avatar: string;
+    avatar_decoration_data?: {
+      asset: string;
+      sku_id: string;
+      expires_at: string | null;
+    };
     banner?: string;
     bio?: string;
   };
@@ -27,7 +32,8 @@ interface DiscordUser {
 
 router.get("/card/:id", async (req, res) => {
   try {
-    const { id, } = req.params;
+    const { id } = req.params;
+    const { showDecorations, showBadges, showDate } = req.query;
 
     if (!id) {
       return res.status(400).json({ error: "User ID is required." });
@@ -50,9 +56,13 @@ router.get("/card/:id", async (req, res) => {
       username: userData.user.username,
       global_name: userData.user.global_name,
       avatar: userData.user.avatar,
+      avatar_decoration_data: userData.user.avatar_decoration_data,
       banner: userData.user.banner,
       badges: userData.badges,
-      createdTimestamp: extractTimestampFromId(userData.user.id)
+      createdTimestamp: extractTimestampFromId(userData.user.id),
+      showDecorations: showDecorations !== "false",
+      showBadges: showBadges !== "false",
+      showDate: showDate !== "false"
     });
 
     res.setHeader("Content-Type", "image/png");
